@@ -1,0 +1,149 @@
+import{initializeApp as e}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";import{addDoc as t,arrayUnion as n,collection as r,deleteDoc as i,doc as a,getFirestore as o,increment as s,onSnapshot as c,orderBy as l,query as u,updateDoc as d}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";(function(){let e=document.createElement(`link`).relList;if(e&&e.supports&&e.supports(`modulepreload`))return;for(let e of document.querySelectorAll(`link[rel="modulepreload"]`))n(e);new MutationObserver(e=>{for(let t of e)if(t.type===`childList`)for(let e of t.addedNodes)e.tagName===`LINK`&&e.rel===`modulepreload`&&n(e)}).observe(document,{childList:!0,subtree:!0});function t(e){let t={};return e.integrity&&(t.integrity=e.integrity),e.referrerPolicy&&(t.referrerPolicy=e.referrerPolicy),e.crossOrigin===`use-credentials`?t.credentials=`include`:e.crossOrigin===`anonymous`?t.credentials=`omit`:t.credentials=`same-origin`,t}function n(e){if(e.ep)return;e.ep=!0;let n=t(e);fetch(e.href,n)}})();var ee={apiKey:`AIzaSyCaVJig9rwitCcTBkX4ACPeSS6DAcQDm30`,authDomain:`daily-vision-e8e9a.firebaseapp.com`,projectId:`daily-vision-e8e9a`,storageBucket:`daily-vision-e8e9a.firebasestorage.app`,messagingSenderId:`723097401323`,appId:`1:723097401323:web:92033a617bdeb198970bae`},te=`dzdi5kpla`,f=`PinkHaze`,ne=`neha124@singh`,p=o(e(ee)),m=!1,h=!1,g=null,_=0,v=[],y=[],b=``,x=`all`,S={heart:`<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`,dislike:`<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M15 3H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L9.83 23l6.59-6.59c.36-.36.58-.86.58-1.41V5c0-1.1-.9-2-2-2zm4 0v12h4V3h-4z"/></svg>`,chat:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`,link:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`,trash:`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>`,plus:`<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>`,close:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`,eye:`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`,bookmark:`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>`,bookmarkFill:`<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>`,edit:`<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>`,search:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`,top:`<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>`,starF:`<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`,starE:`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`,back:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>`,up:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>`};function C(e){return!!localStorage.getItem(`bm_`+e)}function w(e){C(e)?(localStorage.removeItem(`bm_`+e),Q(`Bookmark removed`)):(localStorage.setItem(`bm_`+e,`1`),Q(`Bookmarked!`)),document.querySelectorAll(`[data-bm="${e}"]`).forEach(t=>{t.classList.toggle(`active`,C(e)),t.innerHTML=C(e)?S.bookmarkFill:S.bookmark}),x===`bookmarked`&&M(y)}window.toggleBookmark=w;async function T(e){let t=`viewed_`+e;if(!localStorage.getItem(t)){localStorage.setItem(t,`1`);try{await d(a(p,`posts`,e),{views:s(1)})}catch{}}}var E=null;function re(e){let t=y.find(t=>t.id===e);t&&(E=e,document.getElementById(`editTitleInput`).value=t.title||``,document.getElementById(`editPromptInput`).value=t.prompt||``,document.getElementById(`editModal`).style.display=`flex`)}window.openEditModal=re;function D(){document.getElementById(`editModal`).style.display=`none`,E=null}window.closeEditModal=D;async function ie(){if(!E)return;let e=document.getElementById(`editTitleInput`).value.trim(),t=document.getElementById(`editPromptInput`).value.trim();if(!t){Q(`Prompt cannot be empty`);return}try{await d(a(p,`posts`,E),{title:e,prompt:t}),D(),Q(`Post updated!`)}catch{Q(`Error updating post`)}}window.saveEdit=ie;function ae(){let e=document.getElementById(`typedText`),t=document.getElementById(`welcomeSub`),n=document.getElementById(`welcomeBtn`),r=0,i=setInterval(()=>{r<20?(e.textContent+=`Welcome to Pink Haze`[r],r++):(clearInterval(i),setTimeout(()=>{t.textContent=`A daily gallery of AI-generated art — curated with love. Discover breathtaking visuals, share your thoughts, and explore creativity one image at a time.`,t.classList.add(`show`),setTimeout(()=>{n.classList.add(`show`),n.style.opacity=`1`},600)},300))},55)}function oe(){let e=document.getElementById(`welcomeScreen`);e.classList.add(`hide`),setTimeout(()=>{e.style.display=`none`},800)}window.enterGallery=oe,document.addEventListener(`DOMContentLoaded`,()=>{ae(),A(),G(),k(),ce(),se()});function se(){let e=document.getElementById(`scrollTopBtn`);window.addEventListener(`scroll`,()=>{e.classList.toggle(`visible`,window.scrollY>400)}),e.addEventListener(`click`,()=>window.scrollTo({top:0,behavior:`smooth`}))}function ce(){let e=document.getElementById(`searchInput`);e&&e.addEventListener(`input`,()=>{b=e.value.trim().toLowerCase(),M(y)})}function O(e){x=e,document.querySelectorAll(`.filter-tab`).forEach(t=>t.classList.toggle(`active`,t.dataset.filter===e)),M(y)}window.setFilter=O;function k(){let e=new IntersectionObserver(t=>{t.forEach(t=>{t.isIntersecting&&(t.target.classList.add(`visible`),e.unobserve(t.target))})},{threshold:.08,rootMargin:`0px 0px -40px 0px`});document.querySelectorAll(`.image-card, .date-group-header`).forEach(t=>e.observe(t)),window._scrollObserver=e}function le(e){window._scrollObserver&&window._scrollObserver.observe(e)}function A(){c(u(r(p,`posts`),l(`date`,`desc`)),e=>{let t=[];e.forEach(e=>t.push({id:e.id,...e.data()})),y=t,M(t),V(t),ue(t)})}function ue(e){let t=e.length,n=e.reduce((e,t)=>e+(t.likes||0),0),r=e.reduce((e,t)=>e+(t.views||0),0),i=e.reduce((e,t)=>e+(t.feedbacks?.length||0),0),a=document.getElementById(`analyticsBar`);a&&(a.innerHTML=`
+    <span class="stat-pill">${S.eye} ${r} views</span>
+    <span class="stat-pill">${S.heart} ${n} likes</span>
+    <span class="stat-pill">${S.chat} ${i} feedbacks</span>
+    <span class="stat-pill">${S.bookmark} ${t} posts</span>`)}function de(){let e=[...y].sort((e,t)=>(t.likes||0)-(e.likes||0)).slice(0,10).map((e,t)=>{let n=e.imgUrls?.[0]||e.imgUrl||``,r=t===0?`🥇`:t===1?`🥈`:t===2?`🥉`:`${t+1}.`;return`<div class="lb-row" onclick="closeLeaderboard();openDetailPage('${e.id}')">
+      <span class="lb-rank">${r}</span>
+      <img class="lb-thumb" src="${n}" alt="">
+      <div class="lb-info">
+        <div class="lb-title">${$(e.title||`Untitled`)}</div>
+        <div class="lb-meta">${S.heart} ${e.likes||0} &nbsp; ${S.eye} ${e.views||0}</div>
+      </div>
+    </div>`}).join(``);document.getElementById(`leaderboardList`).innerHTML=e||`<p style="color:var(--text-muted);padding:20px">No posts yet</p>`,document.getElementById(`leaderboardModal`).style.display=`flex`}function j(){document.getElementById(`leaderboardModal`).style.display=`none`}window.openLeaderboard=de,window.closeLeaderboard=j;function M(e){let t=document.getElementById(`feed`),n=e;if(x===`bookmarked`&&(n=e.filter(e=>C(e.id))),x===`top`&&(n=[...e].sort((e,t)=>(t.likes||0)-(e.likes||0))),b&&(n=n.filter(e=>(e.prompt||``).toLowerCase().includes(b)||(e.title||``).toLowerCase().includes(b))),!n.length){t.innerHTML=`<div class="empty-state"><div class="e-icon">${S.heart}</div>
+      <h3>${b?`No results found`:x===`bookmarked`?`No bookmarks yet`:`No images yet`}</h3>
+      <p>${b?`Try a different search term`:`Check back soon!`}</p></div>`;return}let r=new Date().toISOString().slice(0,10),i=n.filter(e=>e.date?.slice(0,10)===r).sort((e,t)=>(t.likes||0)-(e.likes||0))[0],a={};n.forEach(e=>{let t=e.date?e.date.slice(0,10):`unknown`;a[t]||(a[t]=[]),a[t].push(e)});let o=Object.keys(a).sort((e,t)=>t.localeCompare(e)),s=``;if(i&&x===`all`&&!b&&(i.likes||0)>0){let e=i.imgUrls?.[0]||i.imgUrl||``;s+=`<div class="iotd-banner scroll-fade" onclick="openDetailPage('${i.id}')">
+      <img class="iotd-img" src="${e}" alt="Image of the Day">
+      <div class="iotd-overlay">
+        <span class="iotd-badge">Image of the Day</span>
+        <h2 class="iotd-title">${$(i.title||`Today's Best`)}</h2>
+        <div class="iotd-stats">${S.heart} ${i.likes||0} &nbsp; ${S.eye} ${i.views||0}</div>
+      </div>
+    </div>`}o.forEach((e,t)=>{let n=ke(e),r=a[e];s+=`<div class="date-group-header scroll-fade" style="animation-delay:${t*.05}s">
+      <span class="date-group-line"></span>
+      <span class="date-group-label">${n}</span>
+      <span class="date-group-line"></span>
+    </div>`,s+=`<div class="masonry-grid">`,r.forEach((e,n)=>{s+=`<div class="masonry-col">`+N(e,(t+n)*.05)+`</div>`}),s+=`</div>`}),t.innerHTML=s,t.querySelectorAll(`.scroll-fade`).forEach(e=>le(e)),Object.keys(localStorage).forEach(e=>{if(e.startsWith(`react_`)){let t=e.replace(`react_`,``),n=localStorage.getItem(e);n&&B(t,n)}})}function N(e,t=0){let n=e.likes||0,r=e.dislikes||0,i=e.views||0,a=e.feedbacks||[],o=e.imgUrls?.length?e.imgUrls:e.imgUrl?[e.imgUrl]:[],s=C(e.id),c=m?`<button class="delete-btn" onclick="deletePost('${e.id}')">${S.trash} Delete</button>`:``,l=m?`<button class="action-btn" onclick="openEditModal('${e.id}')" title="Edit">${S.edit}</button>`:``,u=P(e.id,o);return`
+    <article class="image-card scroll-fade" id="card_${e.id}" style="animation-delay:${t}s">
+      ${u}
+      <div class="card-body">
+        ${e.title?`<h2 class="card-title">${$(e.title)}</h2>`:``}
+        ${e.prompt?`
+        <div class="prompt-collapsed" id="pc_${e.id}">
+          <span class="prompt-label-inline">AI Prompt</span>
+          <span class="prompt-preview-text">${$(e.prompt)}</span>
+          <button class="prompt-more-btn" onclick="togglePrompt('${e.id}')">more</button>
+        </div>
+        <div class="prompt-expanded-box" id="overlay_${e.id}" style="display:none">
+          <span class="prompt-label-inline">AI Prompt</span>
+          <p class="prompt-expanded-text">${$(e.prompt)}</p>
+          <button class="prompt-more-btn" onclick="togglePrompt('${e.id}')">less</button>
+        </div>`:``}
+        <div class="card-meta-row">
+          <span class="card-views">${S.eye} ${i}</span>
+        </div>
+        <div class="action-bar">
+          <button class="action-btn" onclick="react('${e.id}','likes')" title="Like">
+            <span class="icon">${S.heart}</span>
+            <span class="count" id="likes_${e.id}">${n}</span>
+          </button>
+          <button class="action-btn" onclick="react('${e.id}','dislikes')" title="Dislike">
+            <span class="icon">${S.dislike}</span>
+            <span class="count" id="dislikes_${e.id}">${r}</span>
+          </button>
+          <div class="dot-sep"></div>
+          <button class="action-btn sky" onclick="openFeedback('${e.id}')">
+            <span class="icon">${S.chat}</span><span>Feedback</span>
+          </button>
+          <button class="action-btn sky" onclick="openShare('${e.id}')">
+            <span class="icon">${S.link}</span><span>Share</span>
+          </button>
+          <button class="action-btn ${s?`active`:``}" data-bm="${e.id}" onclick="toggleBookmark('${e.id}')" title="Bookmark">
+            ${s?S.bookmarkFill:S.bookmark}
+          </button>
+          ${a.length?`<button class="action-btn view-fb-btn" onclick="openFeedbackPage('${e.id}')">
+            <span class="icon">${S.eye}</span><span>${a.length}</span>
+          </button>`:``}
+          ${l}
+          ${c}
+        </div>
+      </div>
+    </article>`}function P(e,t){if(!t.length)return``;if(t.length===1)return`<div class="card-img-wrap" onclick="handleImageClick('${e}')" style="cursor:pointer">
+      <img class="card-img" src="${t[0]}" alt="Daily Image" loading="lazy">
+    </div>`;let n=t.map((t,n)=>`<button class="carousel-dot ${n===0?`active`:``}" onclick="goSlide('${e}',${n})"></button>`).join(``),r=t.map((e,t)=>`<div class="carousel-slide ${t===0?`active`:``}"><img class="card-img" src="${e}" alt="img ${t+1}" loading="lazy"></div>`).join(``);return`<div class="carousel" id="carousel_${e}" data-index="0" data-total="${t.length}">
+    <div class="carousel-track" onclick="handleImageClick('${e}')" style="cursor:pointer">${r}</div>
+    <button class="carousel-btn prev" onclick="event.stopPropagation();prevSlide('${e}')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <button class="carousel-btn next" onclick="event.stopPropagation();nextSlide('${e}')"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+    <div class="carousel-dots">${n}</div>
+    <span class="carousel-counter" id="counter_${e}">1 / ${t.length}</span>
+  </div>`}function F(e){T(e),q(e)}window.handleImageClick=F;function I(e,t){let n=document.getElementById(`carousel_${e}`);if(!n)return;let r=parseInt(n.dataset.total);t=(t%r+r)%r,n.dataset.index=t,n.querySelectorAll(`.carousel-slide`).forEach((e,n)=>e.classList.toggle(`active`,n===t)),n.querySelectorAll(`.carousel-dot`).forEach((e,n)=>e.classList.toggle(`active`,n===t));let i=document.getElementById(`counter_${e}`);i&&(i.textContent=`${t+1} / ${r}`)}function L(e){let t=document.getElementById(`carousel_${e}`);t&&I(e,parseInt(t.dataset.index)+1)}function R(e){let t=document.getElementById(`carousel_${e}`);t&&I(e,parseInt(t.dataset.index)-1)}window.goSlide=I,window.nextSlide=L,window.prevSlide=R;async function z(e,t){let n=`react_${e}`,r=localStorage.getItem(n);if(r===t){Q(t===`likes`?`Already liked!`:`Already disliked!`);return}let i={};r&&(i[r]=s(-1)),i[t]=s(1),await d(a(p,`posts`,e),i),localStorage.setItem(n,t),B(e,t)}window.react=z;function B(e,t){document.querySelectorAll(`[onclick*="react('${e}'"]`).forEach(e=>{let n=e.getAttribute(`onclick`)||``;n.includes(`'likes'`)&&e.classList.toggle(`active`,t===`likes`),n.includes(`'dislikes'`)&&e.classList.toggle(`active`,t===`dislikes`)})}function V(e){document.getElementById(`detailPage`)?.classList.contains(`open`)&&e.forEach(e=>{let t=document.getElementById(`dp_likes_${e.id}`),n=document.getElementById(`dp_dislikes_${e.id}`),r=document.getElementById(`dp_views_${e.id}`);t&&(t.textContent=e.likes||0),n&&(n.textContent=e.dislikes||0),r&&(r.textContent=e.views||0);let i=document.getElementById(`likes_${e.id}`),a=document.getElementById(`dislikes_${e.id}`);i&&(i.textContent=e.likes||0),a&&(a.textContent=e.dislikes||0)})}async function H(e){m&&confirm(`Delete this post?`)&&(await i(a(p,`posts`,e)),Q(`Post deleted`))}window.deletePost=H;function fe(){m?W():(document.getElementById(`adminModal`).style.display=`flex`,setTimeout(()=>document.getElementById(`adminPassInput`).focus(),100))}window.handleFabClick=fe;function U(){document.getElementById(`adminModal`).style.display=`none`,document.getElementById(`adminPassInput`).value=``}window.closeAdmin=U;function pe(){if(document.getElementById(`adminPassInput`).value===ne){if(m=!0,U(),Q(`Admin access granted`),!document.getElementById(`adminBadge`)){let e=document.createElement(`div`);e.id=`adminBadge`,e.className=`admin-badge`,e.textContent=`Admin Mode`,document.body.appendChild(e)}document.getElementById(`fabIcon`).innerHTML=S.plus,A()}else Q(`Wrong password`),document.getElementById(`adminPassInput`).value=``}window.checkPassword=pe;function W(){h=!h,document.getElementById(`uploadPanel`).classList.toggle(`open`,h),document.getElementById(`fabIcon`).innerHTML=h?S.close:S.plus,h&&document.getElementById(`uploadPanel`).scrollIntoView({behavior:`smooth`,block:`center`})}window.togglePanel=W;function G(){let e=document.getElementById(`imageInput`);e.addEventListener(`change`,()=>{v=Array.from(e.files),K()}),document.getElementById(`previewContainer`).addEventListener(`click`,e=>e.stopPropagation())}function K(){let e=document.getElementById(`previewContainer`),t=document.getElementById(`uploadPlaceholder`);if(!v.length){e.innerHTML=``,e.style.display=`none`,t.style.display=`flex`;return}t.style.display=`none`,e.style.display=`flex`,e.innerHTML=v.map((e,t)=>`<div class="preview-thumb">
+      <img src="${URL.createObjectURL(e)}" alt="preview ${t+1}">
+      <button class="preview-remove" onclick="removeFile(${t})">${S.close}</button>
+      <div class="preview-prompt-wrap">
+        <textarea class="per-img-prompt" placeholder="Prompt for image ${t+1}..." rows="2"></textarea>
+      </div>
+    </div>`).join(``)}function me(e){v.splice(e,1),K(),v.length||(document.getElementById(`imageInput`).value=``)}window.removeFile=me;async function he(){if(!m){Q(`Admin only!`);return}let e=document.getElementById(`titleInput`).value.trim();if(!v.length){Q(`Please select an image`);return}let n=Array.from(document.querySelectorAll(`.per-img-prompt`)).map(e=>e.value.trim());if(n.some(e=>!e)){Q(`Please add prompt for every image`);return}let i=document.querySelector(`.post-btn`);i.textContent=`Uploading 0/${v.length}...`,i.disabled=!0;try{let a=[];for(let e=0;e<v.length;e++){i.textContent=`Uploading ${e+1}/${v.length}...`;let t=new FormData;t.append(`file`,v[e]),t.append(`upload_preset`,f);let n=await(await fetch(`https://api.cloudinary.com/v1_1/${te}/image/upload`,{method:`POST`,body:t})).json();if(!n.secure_url)throw Error(`Upload failed`);a.push(n.secure_url)}for(let i=0;i<a.length;i++)await t(r(p,`posts`),{imgUrl:a[i],imgUrls:[a[i]],prompt:n[i],title:i===0?e:``,date:new Date().toISOString(),likes:0,dislikes:0,views:0,feedbacks:[]});v=[],document.getElementById(`imageInput`).value=``,document.getElementById(`titleInput`).value=``,K(),W(),Q(`Images posted!`),window.scrollTo({top:0,behavior:`smooth`})}catch(e){console.error(e),Q(`Upload failed — check console`)}finally{i.textContent=`Post to Gallery`,i.disabled=!1}}window.postImage=he;function q(e){let t=y.find(t=>t.id===e);if(!t)return;T(e);let n=t.imgUrls?.length?t.imgUrls:t.imgUrl?[t.imgUrl]:[],r=t.likes||0,i=t.dislikes||0,a=t.views||0,o=t.feedbacks||[],s=C(e),c=n.map((e,t)=>`<img class="dp-img ${t===0?`active`:``}" src="${e}" alt="img ${t+1}" onclick="dpSwitch(${t})" loading="lazy">`).join(``),l=n.length>1?`<div class="dp-thumbs">${n.map((e,t)=>`<img class="dp-thumb ${t===0?`active`:``}" src="${e}" onclick="dpSwitch(${t})" alt="thumb">`).join(``)}</div>`:``,u=o.length?o.map(e=>`<div class="dp-fb-item">
+        <div class="dp-fb-stars">${S.starF.repeat(e.rating)}${S.starE.repeat(5-e.rating)}</div>
+        <p class="dp-fb-text">${$(e.text)}</p>
+        <span class="dp-fb-date">${new Date(e.date).toLocaleDateString(`en-IN`,{day:`numeric`,month:`short`,year:`numeric`})}</span>
+      </div>`).join(``):`<p class="dp-no-fb">No feedbacks yet — be the first!</p>`;document.getElementById(`detailPage`).innerHTML=`
+    <div class="dp-inner">
+      <button class="fp-back" onclick="closeDetailPage()">${S.back} Back</button>
+      <div class="dp-layout">
+        <div class="dp-left">
+          <div class="dp-main-img-wrap">${c}</div>
+          ${l}
+        </div>
+        <div class="dp-right">
+          ${t.title?`<h2 class="dp-title">${$(t.title)}</h2>`:``}
+          <div class="dp-stats-row">
+            <span>${S.eye} <span id="dp_views_${e}">${a}</span> views</span>
+            <span>${S.heart} <span id="dp_likes_${e}">${r}</span> likes</span>
+            <span>${S.chat} ${o.length} feedbacks</span>
+          </div>
+          <div class="dp-prompt-box">
+            <div class="dp-prompt-label">AI Prompt</div>
+            <p class="dp-prompt-text">${$(t.prompt||``)}</p>
+          </div>
+          <div class="dp-reactions">
+            <button class="action-btn ${localStorage.getItem(`react_`+e)===`likes`?`active`:``}" onclick="react('${e}','likes')">
+              <span class="icon">${S.heart}</span><span id="dp_likes_${e}">${r}</span>
+            </button>
+            <button class="action-btn ${localStorage.getItem(`react_`+e)===`dislikes`?`active`:``}" onclick="react('${e}','dislikes')">
+              <span class="icon">${S.dislike}</span><span id="dp_dislikes_${e}">${i}</span>
+            </button>
+            <button class="action-btn sky" onclick="openFeedback('${e}')">
+              <span class="icon">${S.chat}</span> Feedback
+            </button>
+            <button class="action-btn sky" onclick="openShare('${e}')">
+              <span class="icon">${S.link}</span> Share
+            </button>
+            <button class="action-btn ${s?`active`:``}" data-bm="${e}" onclick="toggleBookmark('${e}')" title="Bookmark">
+              ${s?S.bookmarkFill:S.bookmark}
+            </button>
+          </div>
+          <h3 class="dp-fb-title">Community Feedbacks</h3>
+          <div class="dp-fb-list">${u}</div>
+        </div>
+      </div>
+    </div>`,document.getElementById(`detailPage`).classList.add(`open`),document.querySelector(`.site-header`).style.display=`none`,document.querySelector(`.main-content`).style.display=`none`,document.querySelector(`.site-footer`).style.display=`none`,document.querySelector(`.fab`).style.display=`none`,document.getElementById(`scrollTopBtn`).style.display=`none`,window.scrollTo({top:0})}window.openDetailPage=q;function ge(){document.getElementById(`detailPage`).classList.remove(`open`),document.querySelector(`.site-header`).style.display=``,document.querySelector(`.main-content`).style.display=``,document.querySelector(`.site-footer`).style.display=``,document.querySelector(`.fab`).style.display=``,document.getElementById(`scrollTopBtn`).style.display=``}window.closeDetailPage=ge;function _e(e){document.querySelectorAll(`.dp-img`).forEach((t,n)=>t.classList.toggle(`active`,n===e)),document.querySelectorAll(`.dp-thumb`).forEach((t,n)=>t.classList.toggle(`active`,n===e))}window.dpSwitch=_e;function ve(e){let t=y.find(t=>t.id===e);if(!t)return;let n=t.feedbacks||[],r=t.imgUrls?.length?t.imgUrls:t.imgUrl?[t.imgUrl]:[],i=n.length?(n.reduce((e,t)=>e+t.rating,0)/n.length).toFixed(1):null,a=n.length?n.map(e=>`<div class="fp-feedback-item">
+        <div class="fp-stars">${S.starF.repeat(e.rating)}${S.starE.repeat(5-e.rating)}</div>
+        <p class="fp-text">${$(e.text)}</p>
+        <span class="fp-date">${new Date(e.date).toLocaleDateString(`en-IN`,{day:`numeric`,month:`short`,year:`numeric`})}</span>
+      </div>`).join(``):`<div class="fp-empty">No feedbacks yet</div>`;document.getElementById(`feedbackPage`).innerHTML=`
+    <div class="fp-inner">
+      <button class="fp-back" onclick="closeFeedbackPage()">${S.back} Back to Gallery</button>
+      <div class="fp-hero">
+        ${r[0]?`<img src="${r[0]}" class="fp-cover" alt="cover">`:``}
+        <div class="fp-hero-info">
+          ${t.title?`<h2 class="fp-title">${$(t.title)}</h2>`:``}
+          <div class="fp-prompt-box"><span class="fp-prompt-label">AI Prompt</span><p class="fp-prompt-text">${$(t.prompt)}</p></div>
+          ${i?`<div class="fp-avg-rating">
+            <span class="fp-avg-num">${i}</span>
+            <div class="fp-avg-stars">${S.starF.repeat(Math.round(i))}${S.starE.repeat(5-Math.round(i))}</div>
+            <span class="fp-avg-label">${n.length} review${n.length>1?`s`:``}</span>
+          </div>`:``}
+        </div>
+      </div>
+      <h3 class="fp-section-title">Community Feedbacks</h3>
+      <div class="fp-list">${a}</div>
+    </div>`,document.getElementById(`feedbackPage`).classList.add(`open`),[`site-header`,`main-content`,`site-footer`].forEach(e=>document.querySelector(`.`+e).style.display=`none`),document.querySelector(`.fab`).style.display=`none`,window.scrollTo({top:0})}window.openFeedbackPage=ve;function ye(){document.getElementById(`feedbackPage`).classList.remove(`open`),[`site-header`,`main-content`,`site-footer`].forEach(e=>document.querySelector(`.`+e).style.display=``),document.querySelector(`.fab`).style.display=``}window.closeFeedbackPage=ye;function be(e){if(localStorage.getItem(`feedback_${e}`)){Q(`Feedback already submitted!`);return}g=e,_=0,document.getElementById(`feedbackText`).value=``,Y(0);let t=document.getElementById(`feedbackModal`);t.style.zIndex=`1100`,t.style.display=`flex`}window.openFeedback=be;function J(){document.getElementById(`feedbackModal`).style.display=`none`}window.closeFeedback=J;function xe(e){_=e,Y(e)}window.setRating=xe;function Y(e){document.querySelectorAll(`.star`).forEach(t=>t.classList.toggle(`active`,parseInt(t.dataset.val)<=e))}async function Se(){let e=document.getElementById(`feedbackText`).value.trim();if(!e){Q(`Please write something`);return}if(!_){Q(`Please select a rating`);return}try{await d(a(p,`posts`,g),{feedbacks:n({text:e,rating:_,date:new Date().toISOString()})}),localStorage.setItem(`feedback_${g}`,`1`),J(),Q(`Feedback submitted!`),document.getElementById(`detailPage`)?.classList.contains(`open`)&&setTimeout(()=>q(g),400)}catch{Q(`Error submitting feedback`)}}window.submitFeedback=Se;function Ce(e){document.getElementById(`shareLinkInput`).value=`${location.href.split(`#`)[0]}#card_${e}`,document.getElementById(`shareModal`).style.zIndex=`1100`,document.getElementById(`shareModal`).style.display=`flex`}window.openShare=Ce;function X(){document.getElementById(`shareModal`).style.display=`none`}window.closeShare=X;function Z(){navigator.clipboard.writeText(document.getElementById(`shareLinkInput`).value).then(()=>Q(`Link copied!`))}window.copyLink=Z;function we(){window.open(`https://wa.me/?text=Check%20this%20AI%20art!%20${encodeURIComponent(document.getElementById(`shareLinkInput`).value)}`,`_blank`)}window.shareWhatsApp=we;function Te(){window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(document.getElementById(`shareLinkInput`).value)}&text=Amazing%20AI%20Art`,`_blank`)}window.shareTwitter=Te;function Ee(){Z(),Q(`Link copied! Paste on Instagram`)}window.shareInstagram=Ee;function De(e){let t=document.getElementById(`fb_`+e);t&&(t.style.display=t.style.display===`none`?`flex`:`none`)}window.toggleFeedbacks=De;function Oe(e){let t=document.getElementById(`pc_`+e),n=document.getElementById(`overlay_`+e);if(!n)return;let r=n.style.display===`none`;n.style.display=r?`block`:`none`,t&&(t.style.display=r?`none`:`flex`)}window.togglePrompt=Oe,[`feedbackModal`,`shareModal`,`adminModal`,`leaderboardModal`,`editModal`].forEach(e=>{document.getElementById(e)?.addEventListener(`click`,function(t){t.target===this&&(e===`feedbackModal`?J():e===`shareModal`?X():e===`adminModal`?U():e===`leaderboardModal`?j():e===`editModal`&&D())})});function Q(e){let t=document.getElementById(`toast`);t.textContent=e,t.classList.add(`show`),setTimeout(()=>t.classList.remove(`show`),2800)}function $(e){return e?e.replace(/&/g,`&amp;`).replace(/</g,`&lt;`).replace(/>/g,`&gt;`).replace(/"/g,`&quot;`):``}function ke(e){if(!e||e===`unknown`)return`Earlier`;let t=new Date().toISOString().slice(0,10),n=new Date(Date.now()-864e5).toISOString().slice(0,10);return e===t?`Today`:e===n?`Yesterday`:new Date(e).toLocaleDateString(`en-IN`,{weekday:`long`,day:`numeric`,month:`long`,year:`numeric`})}
