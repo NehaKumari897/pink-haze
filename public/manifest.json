@@ -1,0 +1,14 @@
+{
+  "name": "Pink Haze – AI Art Gallery",
+  "short_name": "Pink Haze",
+  "description": "Daily AI-generated art gallery curated with love",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0d0b18",
+  "theme_color": "#f472b6",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "/logo.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/logo.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

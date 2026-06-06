@@ -1,16 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
- <title>Pink Haze – AI Art Gallery</title>
-<link rel="icon" type="image/png" href="/logo.png">
-<link rel="apple-touch-icon" href="/logo.png">
+  <meta name="theme-color" content="#0d0b18">
+  <meta name="description" content="Pink Haze — Daily AI Art Gallery curated with love">
+  <title>Pink Haze – AI Art Gallery</title>
+  <link rel="icon" type="image/png" href="/logo.png">
+  <link rel="apple-touch-icon" href="/logo.png">
+  <link rel="manifest" href="/manifest.json">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+  <!-- Custom Cursor -->
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
 
   <!-- Ambient BG -->
   <div class="ambient-bg">
@@ -27,41 +34,71 @@
     </div>
     <nav class="header-nav">
       <span class="nav-tag">AI · Art · Daily</span>
+      <button class="theme-toggle" id="themeToggle" title="Toggle theme">
+        <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="notif-btn" id="notifBtn" title="Notifications">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="notif-badge" id="notifBadge" style="display:none">!</span>
+      </button>
     </nav>
   </header>
+
+  <!-- Analytics Bar -->
+  <div class="analytics-bar" id="analyticsBar" style="display:none"></div>
+
+  <!-- Search + Filter -->
+  <div class="search-filter-bar">
+    <div class="search-wrap">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="searchInput" class="search-input" placeholder="Search prompts or titles...">
+      <button class="search-clear" id="searchClear" style="display:none" onclick="clearSearch()">✕</button>
+    </div>
+    <div class="filter-tabs">
+      <button class="filter-tab active" data-filter="all"       onclick="setFilter('all')">All</button>
+      <button class="filter-tab"        data-filter="top"       onclick="setFilter('top')">Top Liked</button>
+      <button class="filter-tab"        data-filter="bookmarked" onclick="setFilter('bookmarked')">Bookmarks</button>
+      <button class="filter-tab lb-tab" onclick="openLeaderboard()">Leaderboard</button>
+    </div>
+  </div>
+
+
+  <!-- Hero Banner -->
+  <div class="hero-banner">
+    <img src="/banner.png" alt="Pink Haze Banner" class="hero-banner-img">
+  </div>
 
   <!-- Main Feed -->
   <main class="main-content">
     <section class="feed" id="feed">
-      <div class="loading-state">
-        <div class="spinner"></div>
-        <p>Loading gallery...</p>
+      <!-- Skeleton loading -->
+      <div class="skeleton-grid" id="skeletonGrid">
+        ${Array(6).fill('<div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div>').join('')}
       </div>
     </section>
 
-    <!-- Admin Upload Panel (hidden by default) -->
-    <section class="upload-panel" id="uploadPanel">
-      <div class="upload-card">
-        <h2 class="upload-title">Add Today's Image</h2>
+    <!-- Load More -->
+    <div class="load-more-wrap" id="loadMoreWrap" style="display:none">
+      <button class="load-more-btn" id="loadMoreBtn" onclick="loadMore()">Load More</button>
+    </div>
 
-        <!-- Upload area — click to open file picker -->
+    <!-- Admin Upload Panel -->
+    <section class="upload-panel" id="uploadPanel">
+      <div class="upload-card glass">
+        <h2 class="upload-title">Add Today's Image</h2>
         <div class="upload-area" id="uploadArea">
-          <!-- Multiple file input -->
           <input type="file" id="imageInput" accept="image/*" multiple hidden>
           <div class="upload-placeholder" id="uploadPlaceholder" onclick="document.getElementById('imageInput').click()" style="cursor:pointer">
-            <div class="upload-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>
+            <div class="upload-icon">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+            </div>
             <p>Click to choose images</p>
             <span class="upload-hint">You can select multiple images at once</span>
           </div>
-          <!-- Preview grid (shown when files selected) -->
           <div class="preview-container" id="previewContainer" style="display:none"></div>
         </div>
-
-        <!-- Add more button (shown when files already selected) -->
-        <button class="add-more-btn" onclick="document.getElementById('imageInput').click()">
-          + Add more images
-        </button>
-
+        <button class="add-more-btn" onclick="document.getElementById('imageInput').click()">+ Add more images</button>
         <p class="upload-hint-text">Add a prompt for each image below after selecting</p>
         <input type="text" id="titleInput" class="title-input" placeholder="Gallery title (optional)">
         <button class="post-btn" onclick="postImage()">Post to Gallery</button>
@@ -78,11 +115,11 @@
       </div>
       <p class="footer-copy">© 2026 Pink Haze · Made with love</p>
       <div class="footer-socials">
-        <a href="https://instagram.com/pink_hazemp4" target="_blank" class="social-pill insta">
+     <a href="https://instagram.com/pink_hazemp4" target="_blank" class="social-pill insta">
           <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
           Instagram
         </a>
-        <a href="https://facebook.com/profile.php?id=61590772221079" target="_blank" class="social-pill facebook">
+         <a href="https://facebook.com/profile.php?id=61590772221079" target="_blank" class="social-pill facebook">
   <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
   Facebook
 </a>
@@ -90,8 +127,7 @@
   <svg width="16" height="16" fill="currentColor" viewBox="0 0 192 192"><path d="M141.537 88.988a66.667 66.667 0 0 0-2.518-1.143c-1.482-27.307-16.403-42.94-41.457-43.1h-.34c-14.986 0-27.449 6.396-35.12 18.036l13.779 9.452c5.73-8.695 14.724-10.548 21.348-10.548h.229c8.249.053 14.474 2.452 18.503 7.129 2.932 3.405 4.893 8.111 5.864 14.05-7.314-1.244-15.224-1.626-23.68-1.14-23.82 1.371-39.134 15.264-38.105 34.568.522 9.792 5.4 18.216 13.735 23.719 7.047 4.652 16.124 6.927 25.557 6.412 12.458-.683 22.231-5.436 29.049-14.127 5.178-6.6 8.453-15.153 9.899-25.93 5.937 3.583 10.337 8.298 12.767 13.966 4.132 9.635 4.373 25.468-8.546 38.376-11.319 11.308-24.925 16.2-45.488 16.351-22.809-.169-40.06-7.484-51.275-21.742C35.236 139.966 29.808 120.682 29.605 96c.203-24.682 5.63-43.966 16.133-57.317C56.954 24.425 74.204 17.11 97.013 16.941c22.975.17 40.526 7.52 52.171 21.847 5.71 7.026 10.015 15.86 12.853 26.162l16.147-4.308c-3.44-12.68-8.853-23.606-16.219-32.668C147.036 9.607 125.202.195 97.07 0h-.113C68.882.195 47.292 9.642 32.788 28.08 19.882 44.485 13.224 67.315 13.001 95.932L13 96v.067c.224 28.617 6.882 51.447 19.788 67.854C47.292 182.358 68.882 191.805 96.957 192h.113c24.96-.173 42.554-6.708 57.048-21.189 18.963-18.945 18.392-42.692 12.142-57.27-4.484-10.454-13.033-18.945-24.723-24.553zm-41.737 49.196c-10.426.588-21.258-4.098-21.82-14.135-.427-8.014 5.702-16.93 24.156-18.004 2.114-.122 4.172-.181 6.182-.181 6.078 0 11.76.554 16.943 1.596-1.928 24.142-14.568 30.195-25.46 30.724z"/></svg>
   Threads
 </a>
-
-       <a href="https://t.me/pinkhazeprompts" target="_blank" class="social-pill telegram">
+   <a href="https://t.me/pinkhazeprompts" target="_blank" class="social-pill telegram">
   <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
   Telegram
 </a>
@@ -99,17 +135,44 @@
     </div>
   </footer>
 
-  <!-- FAB (Admin only) -->
+  <!-- FAB -->
   <button class="fab" onclick="handleFabClick()" title="Admin">
-    <span id="fabIcon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+    <span id="fabIcon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </span>
+  </button>
+
+  <!-- Scroll To Top -->
+  <button class="scroll-top-btn" id="scrollTopBtn" title="Back to top">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
   </button>
 
   <!-- Toast -->
   <div class="toast" id="toast"></div>
 
-  <!-- Admin Password Modal -->
+  <!-- Story Viewer -->
+  <div class="story-viewer" id="storyViewer" style="display:none">
+    <button class="story-close" onclick="closeStory()">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <button class="story-nav prev" onclick="storyPrev()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="story-content" id="storyContent"></div>
+    <button class="story-nav next" onclick="storyNext()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <div class="story-progress" id="storyProgress"></div>
+    <div class="story-counter" id="storyCounter"></div>
+  </div>
+
+  <!-- Pages -->
+  <div class="feedback-page" id="detailPage"></div>
+  <div class="feedback-page" id="feedbackPage"></div>
+
+  <!-- Admin Modal -->
   <div class="modal-overlay" id="adminModal" style="display:none">
-    <div class="modal-card">
+    <div class="modal-card glass">
       <button class="modal-close" onclick="closeAdmin()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       <h3 class="modal-title">Admin Access</h3>
       <p class="share-desc">Enter password to add images</p>
@@ -121,7 +184,7 @@
 
   <!-- Feedback Modal -->
   <div class="modal-overlay" id="feedbackModal" style="display:none">
-    <div class="modal-card">
+    <div class="modal-card glass">
       <button class="modal-close" onclick="closeFeedback()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       <h3 class="modal-title">Share Your Feedback</h3>
       <textarea class="feedback-textarea" id="feedbackText" placeholder="What do you think about this image?"></textarea>
@@ -141,54 +204,64 @@
 
   <!-- Share Modal -->
   <div class="modal-overlay" id="shareModal" style="display:none">
-    <div class="modal-card">
+    <div class="modal-card glass">
       <button class="modal-close" onclick="closeShare()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       <h3 class="modal-title">Share This Image</h3>
       <p class="share-desc">Copy the link or share directly:</p>
       <div class="share-link-box">
         <input type="text" id="shareLinkInput" class="share-link-input" readonly>
         <button class="copy-btn" onclick="copyLink()">Copy</button>
-      </div> 
+      </div>
       <div class="share-buttons">
-
-    <button class="share-pill whatsapp" onclick="shareWhatsApp()">
-        WhatsApp
-    </button>
-
-    <button class="share-pill instagram" onclick="shareInstagram()">
-        Instagram
-    </button>
-
-    <button class="share-pill threads" onclick="shareThreads()">
-        Threads
-    </button>
-
-    <button class="share-pill telegram" onclick="shareTelegram()">
-        Telegram
-    </button>
-
-</div>
+        <a id="shareWhatsAppBtn" href="#" target="_blank" class="share-pill whatsapp">
+          <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+          WhatsApp
+        </a>
+        <a id="shareFacebookBtn" href="#" target="_blank" class="share-pill facebook">
+          <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          Facebook
+        </a>
+        <button id="shareInstagramBtn" class="share-pill insta" onclick="shareInstagram()">
+          <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          Instagram
+        </button>
+        <a id="shareThreadsBtn" href="#" target="_blank" class="share-pill threads">
+          <svg width="15" height="15" fill="currentColor" viewBox="0 0 192 192"><path d="M141.537 88.988a66.667 66.667 0 0 0-2.518-1.143c-1.482-27.307-16.403-42.94-41.457-43.1h-.34c-14.986 0-27.449 6.396-35.12 18.036l13.779 9.452c5.73-8.695 14.724-10.548 21.348-10.548h.229c8.249.053 14.474 2.452 18.503 7.129 2.932 3.405 4.893 8.111 5.864 14.05-7.314-1.244-15.224-1.626-23.68-1.14-23.82 1.371-39.134 15.264-38.105 34.568.522 9.792 5.4 18.216 13.735 23.719 7.047 4.652 16.124 6.927 25.557 6.412 12.458-.683 22.231-5.436 29.049-14.127 5.178-6.6 8.453-15.153 9.899-25.93 5.937 3.583 10.337 8.298 12.767 13.966 4.132 9.635 4.373 25.468-8.546 38.376-11.319 11.308-24.925 16.2-45.488 16.351-22.809-.169-40.06-7.484-51.275-21.742C35.236 139.966 29.808 120.682 29.605 96c.203-24.682 5.63-43.966 16.133-57.317C56.954 24.425 74.204 17.11 97.013 16.941c22.975.17 40.526 7.52 52.171 21.847 5.71 7.026 10.015 15.86 12.853 26.162l16.147-4.308c-3.44-12.68-8.853-23.606-16.219-32.668C147.036 9.607 125.202.195 97.07 0h-.113C68.882.195 47.292 9.642 32.788 28.08 19.882 44.485 13.224 67.315 13.001 95.932L13 96v.067c.224 28.617 6.882 51.447 19.788 67.854C47.292 182.358 68.882 191.805 96.957 192h.113c24.96-.173 42.554-6.708 57.048-21.189 18.963-18.945 18.392-42.692 12.142-57.27-4.484-10.454-13.033-18.945-24.723-24.553zm-41.737 49.196c-10.426.588-21.258-4.098-21.82-14.135-.427-8.014 5.702-16.93 24.156-18.004 2.114-.122 4.172-.181 6.182-.181 6.078 0 11.76.554 16.943 1.596-1.928 24.142-14.568 30.195-25.46 30.724z"/></svg>
+          Threads
+        </a>
+      </div>
     </div>
   </div>
 
+  <!-- Leaderboard Modal -->
+  <div class="modal-overlay" id="leaderboardModal" style="display:none">
+    <div class="modal-card modal-card-wide glass">
+      <button class="modal-close" onclick="closeLeaderboard()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <h3 class="modal-title">Top Liked Images</h3>
+      <div id="leaderboardList" class="lb-list"></div>
+    </div>
+  </div>
 
-  <!-- ===== WELCOME SCREEN ===== -->
+  <!-- Edit Modal -->
+  <div class="modal-overlay" id="editModal" style="display:none">
+    <div class="modal-card glass">
+      <button class="modal-close" onclick="closeEditModal()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <h3 class="modal-title">Edit Post</h3>
+      <input type="text" id="editTitleInput" class="title-input" placeholder="Title (optional)" style="margin-bottom:12px">
+      <textarea id="editPromptInput" class="feedback-textarea" placeholder="AI Prompt..." style="min-height:140px"></textarea>
+      <button class="post-btn" onclick="saveEdit()">Save Changes</button>
+    </div>
+  </div>
+
+  <!-- Welcome Screen -->
   <div class="welcome-screen" id="welcomeScreen">
     <div class="welcome-orb welcome-orb1"></div>
     <div class="welcome-orb welcome-orb2"></div>
     <div class="welcome-orb welcome-orb3"></div>
-
     <div class="welcome-content">
-      <div class="welcome-logo">
-        <img src="logo.png" alt="Pink Haze" class="welcome-logo-img">
-      </div>
-
-      <h1 class="welcome-title">
-        <span class="typed-text" id="typedText"></span><span class="cursor">|</span>
-      </h1>
-
+      <div class="welcome-logo"><img src="logo.png" alt="Pink Haze" class="welcome-logo-img"></div>
+      <h1 class="welcome-title"><span class="typed-text" id="typedText"></span><span class="cursor">|</span></h1>
       <p class="welcome-sub" id="welcomeSub"></p>
-
       <button class="welcome-btn" id="welcomeBtn" onclick="enterGallery()" style="opacity:0">
         <span>Enter Gallery</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -196,13 +269,6 @@
     </div>
   </div>
 
-  <!-- ===== DETAIL PAGE ===== -->
-  <div class="feedback-page" id="detailPage"></div>
-
-  <!-- ===== FEEDBACK PAGE ===== -->
-  <div class="feedback-page" id="feedbackPage"></div>
-
-  <!-- Firebase SDK -->
   <script type="module" src="app.js"></script>
 </body>
 </html>
