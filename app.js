@@ -200,20 +200,95 @@ async function trackView(id) {
 }
 
 // ── DOWNLOAD IMAGE ────────────────────────────────────────────
-async function downloadImage(url, title) {
-  try {
-    const res  = await fetch(url);
-    const blob = await res.blob();
+function downloadImage(url, title) {
+  if (!url) { showToast('No image to download'); return; }
+  showToast('Adding watermark...');
+
+  const img = new Image();
+  img.crossOrigin = 'anonymous';
+
+  // Use Cloudinary crossorigin-friendly URL
+  const proxyUrl = url.includes('cloudinary.com')
+    ? url.replace('/upload/', '/upload/fl_attachment/')
+    : url;
+
+  img.onload = function() {
+    const canvas  = document.createElement('canvas');
+    canvas.width  = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    const ctx     = canvas.getContext('2d');
+
+    // Draw original image
+    ctx.drawImage(img, 0, 0);
+
+    // ── Watermark settings ──────────────────────────────
+    const text     = 'Pink_Haze_Mp4';
+    const fontSize = Math.max(18, Math.floor(canvas.width / 28));
+    ctx.font       = `bold ${fontSize}px Arial, sans-serif`;
+    ctx.fillStyle  = 'rgba(255, 255, 255, 0.18)';
+    ctx.strokeStyle= 'rgba(244, 114, 182, 0.12)';
+    ctx.lineWidth  = 1;
+
+    // Rotate & tile watermark diagonally
+    ctx.save();
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    ctx.rotate(-Math.PI / 5); // -36 degrees diagonal
+
+    const textW   = ctx.measureText(text).width;
+    const spacingX = textW + 60;
+    const spacingY = fontSize + 48;
+    const cols     = Math.ceil(canvas.width  / spacingX) + 4;
+    const rows     = Math.ceil(canvas.height / spacingY) + 4;
+    const startX   = -(cols / 2) * spacingX;
+    const startY   = -(rows / 2) * spacingY;
+
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const x = startX + c * spacingX;
+        const y = startY + r * spacingY;
+        ctx.fillText(text, x, y);
+        ctx.strokeText(text, x, y);
+      }
+    }
+    ctx.restore();
+
+    // Bottom right Pink Haze credit
+    const creditSize = Math.max(14, Math.floor(canvas.width / 45));
+    ctx.font         = `bold ${creditSize}px Arial, sans-serif`;
+    ctx.fillStyle    = 'rgba(244, 114, 182, 0.7)';
+    ctx.shadowColor  = 'rgba(0,0,0,0.5)';
+    ctx.shadowBlur   = 6;
+    const creditText = '✦ Pink_Haze_Mp4';
+    const tw         = ctx.measureText(creditText).width;
+    ctx.fillText(creditText, canvas.width - tw - 20, canvas.height - 18);
+    ctx.shadowBlur   = 0;
+
+    // Download
+    canvas.toBlob(blob => {
+      const a    = document.createElement('a');
+      a.href     = URL.createObjectURL(blob);
+      a.download = (title || 'pink-haze').replace(/[^a-zA-Z0-9 _-]/g, '') + '.jpg';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(a.href);
+      showToast('Downloaded with watermark!');
+    }, 'image/jpeg', 0.92);
+  };
+
+  img.onerror = function() {
+    // Fallback — direct download without watermark
     const a    = document.createElement('a');
-    a.href     = URL.createObjectURL(blob);
-    a.download = (title || 'pink-haze-image') + '.jpg';
+    a.href     = proxyUrl;
+    a.download = (title || 'pink-haze') + '.jpg';
+    a.target   = '_blank';
+    document.body.appendChild(a);
     a.click();
-    URL.revokeObjectURL(a.href);
-    showToast('Download started!');
-  } catch(e) {
-    window.open(url, '_blank');
-    showToast('Opened in new tab');
-  }
+    document.body.removeChild(a);
+    showToast('Downloading...');
+  };
+
+  img.src = url + (url.includes('?') ? '&' : '?') + '_t=' + Date.now();
 }
 window.downloadImage = downloadImage;
 
@@ -740,7 +815,19 @@ async function postImage() {
       const res=await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,{method:'POST',body:fd});
       const data=await res.json();
       if (!data.secure_url) throw new Error('Upload failed');
-      await addDoc(collection(db,'posts'),{imgUrl:data.secure_url,imgUrls:[data.secure_url],prompt:prompts[i],title:i===0?title:'',date:new Date().toISOString(),likes:0,dislikes:0,views:0,feedbacks:[]});
+      // Each image gets unique timestamp so all show separately
+      const uniqueDate = new Date(Date.now() + i * 1000).toISOString();
+      await addDoc(collection(db,'posts'),{
+        imgUrl:   data.secure_url,
+        imgUrls:  [data.secure_url],
+        prompt:   prompts[i],
+        title:    i===0 ? title : '',
+        date:     uniqueDate,
+        likes:    0,
+        dislikes: 0,
+        views:    0,
+        feedbacks:[]
+      });
     }
     selectedFiles=[]; document.getElementById('imageInput').value=''; document.getElementById('titleInput').value='';
     renderPreviews(); togglePanel(); showToast('Images posted!'); window.scrollTo({top:0,behavior:'smooth'});
