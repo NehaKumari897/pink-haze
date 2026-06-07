@@ -222,7 +222,7 @@ function downloadImage(url, title) {
     ctx.drawImage(img, 0, 0);
 
     // ── Watermark settings ──────────────────────────────
-    const text     = 'Pink_Haze_Mp4';
+    const text     = 'Pink Haze';
     const fontSize = Math.max(18, Math.floor(canvas.width / 28));
     ctx.font       = `bold ${fontSize}px Arial, sans-serif`;
     ctx.fillStyle  = 'rgba(255, 255, 255, 0.18)';
@@ -258,7 +258,7 @@ function downloadImage(url, title) {
     ctx.fillStyle    = 'rgba(244, 114, 182, 0.7)';
     ctx.shadowColor  = 'rgba(0,0,0,0.5)';
     ctx.shadowBlur   = 6;
-    const creditText = '✦ Pink_Haze_Mp4';
+    const creditText = '✦ Pink Haze';
     const tw         = ctx.measureText(creditText).width;
     ctx.fillText(creditText, canvas.width - tw - 20, canvas.height - 18);
     ctx.shadowBlur   = 0;
@@ -429,6 +429,230 @@ document.addEventListener('keydown', e => {
     if (e.key === 'ArrowLeft')  storyPrev();
     if (e.key === 'Escape')     closeStory();
   }
+});
+
+
+// ============================================================
+//  VIDEO SECTION
+// ============================================================
+let videoFilter    = 'all';
+let videoCache     = [];
+let videoSectionOpen = false;
+
+function toggleVideoSection() {
+  videoSectionOpen = !videoSectionOpen;
+  const section = document.getElementById('videoSection');
+  const btn     = document.getElementById('videosNavBtn');
+  if (videoSectionOpen) {
+    section.style.display = 'block';
+    btn.classList.add('active');
+    listenToVideos();
+    window.scrollTo({ top: section.offsetTop - 70, behavior: 'smooth' });
+  } else {
+    section.style.display = 'none';
+    btn.classList.remove('active');
+  }
+}
+window.toggleVideoSection = toggleVideoSection;
+
+function setVideoFilter(f) {
+  videoFilter = f;
+  document.querySelectorAll('.video-tab').forEach(t =>
+    t.classList.toggle('active', t.textContent.toLowerCase() === f || (f==='all' && t.textContent==='All'))
+  );
+  renderVideos(videoCache);
+}
+window.setVideoFilter = setVideoFilter;
+
+// Firestore video listener
+let videoUnsubscribe = null;
+function listenToVideos() {
+  if (videoUnsubscribe) return;
+  setupVideoCoverPreview();
+  const q = query(collection(db, 'videos'), orderBy('date', 'desc'));
+  videoUnsubscribe = onSnapshot(q, snap => {
+    videoCache = [];
+    snap.forEach(d => videoCache.push({ id: d.id, ...d.data() }));
+    renderVideos(videoCache);
+    const panel = document.getElementById('videoUploadPanel');
+    if (panel) panel.style.display = isAdmin ? 'block' : 'none';
+  });
+}
+
+function setupVideoCoverPreview() {
+  const input = document.getElementById('videoCoverInput');
+  if (!input || input._listenerAdded) return;
+  input._listenerAdded = true;
+  input.addEventListener('change', () => {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('videoCoverPreview').src = e.target.result;
+      document.getElementById('videoCoverPreview').style.display = 'block';
+      document.getElementById('videoCoverPlaceholder').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  });
+  // Stop click propagation from preview
+  document.getElementById('videoCoverUpload')?.addEventListener('click', e => e.stopPropagation());
+  document.getElementById('videoCoverUpload')?.addEventListener('click', () => {
+    document.getElementById('videoCoverInput').click();
+  });
+}
+
+function renderVideos(videos) {
+  const grid = document.getElementById('videoGrid');
+  if (!grid) return;
+
+  let filtered = videoFilter === 'all'
+    ? videos
+    : videos.filter(v => v.type === videoFilter);
+
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="video-empty">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+      <p>No videos yet — check back soon!</p>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(v => createVideoCard(v)).join('');
+}
+
+function createVideoCard(v) {
+  const thumb    = getVideoThumb(v);
+  const typeLabel= v.type === 'comic' ? 'Comic' : 'AI Art';
+  const date     = v.date ? new Date(v.date).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }) : '';
+  const deleteBtn= isAdmin ? `<button class="video-delete-btn" onclick="deleteVideo('${v.id}')">Delete</button>` : '';
+
+  return `<div class="video-card" onclick="openVideoLightbox('${v.id}')">
+    <div class="video-thumb">
+      <img src="${thumb}" alt="${escHtml(v.title||'Video')}" loading="lazy"
+           onerror="this.src='https://via.placeholder.com/480x270/13101f/f472b6?text=Pink+Haze'">
+      <div class="video-play-btn">
+        <div class="video-play-circle">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        </div>
+      </div>
+      <span class="video-type-badge">${typeLabel}</span>
+    </div>
+    <div class="video-card-body">
+      <div class="video-card-title">${escHtml(v.title || 'Untitled')}</div>
+      ${v.prompt ? `<div class="video-card-prompt">${escHtml(v.prompt)}</div>` : ''}
+      <div class="video-card-meta">
+        <span class="video-card-date">${date}</span>
+        ${deleteBtn}
+      </div>
+    </div>
+  </div>`;
+}
+
+function getVideoThumb(v) {
+  // Use custom cover if uploaded
+  if (v.coverUrl) return v.coverUrl;
+  const url = v.url || '';
+  // YouTube thumbnail
+  const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+  if (ytMatch) return 'https://img.youtube.com/vi/' + ytMatch[1] + '/hqdefault.jpg';
+  return 'https://placehold.co/480x270/13101f/f472b6?text=Pink+Haze';
+}
+
+function getEmbedUrl(url) {
+  if (!url) return '';
+  // YouTube embed
+  const ytMatch = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&\s]+)/);
+  if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1&rel=0`;
+  // Direct mp4
+  return url;
+}
+
+function openVideoLightbox(id) {
+  const v = videoCache.find(v => v.id === id);
+  if (!v) return;
+
+  const embedUrl = getEmbedUrl(v.url);
+  const isYT     = embedUrl.includes('youtube.com/embed');
+  const player   = isYT
+    ? `<iframe src="${embedUrl}" allowfullscreen allow="autoplay; encrypted-media"></iframe>`
+    : `<video src="${v.url}" controls autoplay style="width:100%;height:100%"></video>`;
+
+  document.getElementById('vlPlayer').innerHTML = player;
+  document.getElementById('vlInfo').innerHTML = `
+    <div class="vl-title">${escHtml(v.title || 'Untitled')}</div>
+    ${v.prompt ? `<div class="vl-prompt-label">Story</div><div class="vl-prompt">${escHtml(v.prompt)}</div>` : ''}`;
+
+  document.getElementById('videoLightbox').style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+window.openVideoLightbox = openVideoLightbox;
+
+function closeVideoLightbox() {
+  document.getElementById('videoLightbox').style.display = 'none';
+  document.getElementById('vlPlayer').innerHTML = ''; // stop video
+  document.body.style.overflow = '';
+}
+window.closeVideoLightbox = closeVideoLightbox;
+
+async function postVideo() {
+  if (!isAdmin) { showToast('Admin only!'); return; }
+  const url    = document.getElementById('videoUrlInput').value.trim();
+  const type   = document.getElementById('videoTypeSelect').value;
+  const title  = document.getElementById('videoTitleInput').value.trim();
+  const prompt = document.getElementById('videoPromptInput').value.trim();
+  const coverFile = document.getElementById('videoCoverInput').files[0];
+
+  if (!url)    { showToast('Please enter a video URL'); return; }
+  if (!prompt) { showToast('Please add the AI prompt'); return; }
+
+  const btn = document.querySelector('#videoUploadPanel .post-btn');
+  if (btn) { btn.textContent = 'Posting...'; btn.disabled = true; }
+
+  try {
+    let coverUrl = '';
+
+    // Upload cover photo to Cloudinary if provided
+    if (coverFile) {
+      const fd = new FormData();
+      fd.append('file', coverFile);
+      fd.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+      const res  = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
+      const data = await res.json();
+      coverUrl   = data.secure_url || '';
+    }
+
+    await addDoc(collection(db, 'videos'), {
+      url, type, title, prompt, coverUrl,
+      date: new Date().toISOString()
+    });
+
+    // Reset form
+    document.getElementById('videoUrlInput').value    = '';
+    document.getElementById('videoTitleInput').value  = '';
+    document.getElementById('videoPromptInput').value = '';
+    document.getElementById('videoCoverInput').value  = '';
+    document.getElementById('videoCoverPreview').style.display     = 'none';
+    document.getElementById('videoCoverPlaceholder').style.display = 'flex';
+
+    showToast('Video posted!');
+  } catch(e) {
+    console.error(e); showToast('Error posting video');
+  } finally {
+    if (btn) { btn.textContent = 'Post Video'; btn.disabled = false; }
+  }
+}
+window.postVideo = postVideo;
+
+async function deleteVideo(id) {
+  if (!isAdmin || !confirm('Delete this video?')) return;
+  await deleteDoc(doc(db, 'videos', id));
+  showToast('Video deleted');
+}
+window.deleteVideo = deleteVideo;
+
+// Keyboard: Escape closes lightbox
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeVideoLightbox();
 });
 
 // ============================================================
